@@ -44,31 +44,44 @@ int main(void)
   /* Enable clock for GPIO port A*/
 
 	//type your code for GPIOA clock enable here:
-
+	*((volatile uint32_t *) (uint32_t)(RCC_BASE_ADDR + RCC_AHBENR_REG)) |= (uint32_t)(1 << 17);
 
   /* GPIOA pin 3 and 4 setup */
+	// Set mode for GPIOA pin 3
+		*((volatile uint32_t *)((uint32_t)GPIOA_BASE_ADDR)) &= ~(uint32_t)(0x3 << 8);
+	// Set mode for GPIOA pin 4
+		*((volatile uint32_t *)((uint32_t)GPIOA_BASE_ADDR)) |= (uint32_t)(1 << 10);
 
 	//type your code for GPIOA pins setup here:
+	// OTYPER
+		*((volatile uint32_t *)((uint32_t)(GPIOA_BASE_ADDR + GPIOA_OTYPER_REG))) &= ~(1 << 5);
+	// OSPEEDR for GPIOA pin 4
+		*((volatile uint32_t *)((uint32_t)(GPIOA_BASE_ADDR + GPIOA_OSPEEDER_REG))) &= ~(0x3 << 10);
 
+	// GPIO PUPDR register, reset
+	// Pull-up for GPIOA 3
+		*((volatile uint32_t *)((uint32_t)(GPIOA_BASE_ADDR + GPIOA_PUPDR_REG))) |= (1 << 8);
+	// No pull-up, pull-down for GPIOA 4
+		*((volatile uint32_t *)((uint32_t)(GPIOA_BASE_ADDR + GPIOA_PUPDR_REG))) &= ~(0x3 << 10);
 
   while (1)
   {
-	  if(BUTTON_GET_STATE)
+	 if(BUTTON_GET_STATE)
 	  {
 		  // 0.25s delay
-		  LL_mDelay(250);
+		  for(uint16_t i = 0; i < 0xFF00; i++){}
 		  LED_ON;
 		  // 0.25s delay
-		  LL_mDelay(250);
+		  for(uint16_t i = 0; i < 0xFF00; i++){}
 		  LED_OFF;
 	  }
 	  else
 	  {
 		  // 1s delay
-		  LL_mDelay(1000);
+		  for(uint32_t i = 0; i < 0xFFFF0; i++){}
 		  LED_ON;
 		  // 1s delay
-		  LL_mDelay(1000);
+		  for(uint32_t i = 0; i < 0xFFFF0; i++){}
 		  LED_OFF;
 	  }
   }
